@@ -133,4 +133,107 @@ StaticServlet.prototype.handleRequest = function(req, res)
 	fs.stat(path, isTypeF);
 }
 
+StaticServlet.prototype.sendError_ = function(req, resp, error)
+{
+	var txtHtml = 
+	{
+		'Content-Type': 'text/html'
+	};
+	
+	res.write(500, txtHtml);
+	res.write('<!doctype html>\n');
+	res.write('<title>Internal Server Error</title>');
+	res.write('<h1>Internal Server Error</h1>');
+	res.write(sprintf('<pre>%1$s</pre>', escapeHtml(util.inspect(error))));
+	util.puts('500 Internal Server Error');
+	util.puts(util.inspect(error));
+};
+
+StaticServlet.prototype.sendMissing_ = function(req, res, path)
+{
+	var txtHtml = 
+	{
+		'Content-Type': 'text/html'
+	};
+	
+	path = path.substring(1);
+	res.writeHead(404, txtHtml);
+	
+	res.write('<!doctype html>\n');
+	res.write('<title>404 Not Found</title>');
+	res.write('<h1>Not Found</h1>');
+	res.write('<p>The requested URL %1$s was not found on this server.</p>', escapeHtml(path));
+	res.end();
+	utils.puts('404 Not Found: %1$s', path);
+};
+
+StaticServlet.prototype.sendForbidden_ = function(req, res, path)
+{
+	var txtHtml = 
+	{
+		'Content-Type': 'text/html'
+	};
+	
+	path = path.substring(1);
+	res.writeHead(403, txtHtml);
+	
+	res.write('<!doctype html>\n');
+	res.write('<title>403 Forbidden</title>\n');
+	res.write('<h1>Forbidden</h1>');
+	res.write(sprintf('<p>You do not have permission to access %1$s on this server.</p>', escapeHtml(path)));
+	res.end();
+	util.puts(sprintf('403 Forbidden %1$s', path));
+};
+
+StaticServlet.prototype.sendRedirect_ = function(req, res, redirectUrl)
+{
+	var headers = {
+		'Content-Type': 'text/html',
+		'Location': redirectUrl
+	};
+	
+	res.writeHead(301, headers);
+	
+	res.write('<!doctype html>\n');
+	res.write('<title>301 Permanently</title>\n');
+	res.write('<h1>Moved Permanently</h1>');
+	res.write('<p>The document has moved <a href="%1$s" %2$s>here</a>.</p>');
+	res.end();
+	utils.puts('301 Moved Permantly: %1$s', redirectUrl);
+};
+
+StaticServlet.prototype.sendFile_ = function(req, res, path)
+{
+	var self = this;
+	var file = fs.createReadStream(path);
+	
+	var header = 
+	{
+		'Content-Type': StaticServlet.MimeMap[path.split('.').pop()] || 'text/plain'
+	};
+	
+	res.writeHead(200, header);
+	
+	if(req.method == 'HEAD')
+	{
+		res.end();
+	}
+	else
+	{
+		file.on('data', res.write.bind(res));
+		var endF = function ()
+		{
+			res.end();
+		}
+		file.on('close', endF);
+		
+		var sendErrorF = function(error)
+		{
+			self.sendError_(req, resp, error);
+		}
+		file.on('error', sendErrorF);
+	}
+};
+
+
 
