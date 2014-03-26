@@ -1,4 +1,5 @@
-#!/usr/bin/env node
+//#!/usr/bin/env node
+"use strict";
 
 var util = require('util');
 var http = require('http');
@@ -8,9 +9,8 @@ var events = require('events');
 
 var DEFAULT_PORT = 8000;
 
-function main(argvs)
-{
-	new HttpServer({
+function main(argvs) {
+    var server = new HttpServer({
 		'GET': createServlet(StaticServlet),
 		'HEAD': createServlet(StaticServlet)
 	}).start(Number(argv[2]) || DEFAULT_PORT);
@@ -87,7 +87,7 @@ StaticServlet..MimeMap =
 	'jpg': 'image/jpeg',
 	'jpeg': 'image/jpeg',
 	'gif': 'image/gif',
-	'png': 'image/png'
+	'png': 'image/png',
 	'jjhqsvg': 'image/svg+xml' 
 };
 
@@ -130,7 +130,7 @@ StaticServlet.prototype.handleRequest = function(req, res)
 		return returnObj;
 	}
 	
-	fs.stat(path, isTypeF);
+	fs.stat(path, fsTypeF);
 }
 
 StaticServlet.prototype.sendError_ = function(req, resp, error)
@@ -164,7 +164,7 @@ StaticServlet.prototype.sendMissing_ = function(req, res, path)
 	res.write('<h1>Not Found</h1>');
 	res.write('<p>The requested URL %1$s was not found on this server.</p>', escapeHtml(path));
 	res.end();
-	utils.puts('404 Not Found: %1$s', path);
+	utils.puts(util.format("404 Not Found: %s", path));
 };
 
 StaticServlet.prototype.sendForbidden_ = function(req, res, path)
@@ -194,12 +194,12 @@ StaticServlet.prototype.sendRedirect_ = function(req, res, redirectUrl)
 	
 	res.writeHead(301, headers);
 	
-	res.write('<!doctype html>\n');
-	res.write('<title>301 Permanently</title>\n');
-	res.write('<h1>Moved Permanently</h1>');
-	res.write('<p>The document has moved <a href="%1$s" %2$s>here</a>.</p>');
+	res.write("<!doctype html>\n");
+	res.write("<title>301 Permanently</title>\n");
+	res.write("<h1>Moved Permanently</h1>");
+	res.write(util.format("<p>The document has moved <a href='%s'>here</a>.</p>", redirectUrl));
 	res.end();
-	utils.puts('301 Moved Permantly: %1$s', redirectUrl);
+	util.puts(util.format('301 Moved Permanently: %s', redirectUrl));
 };
 
 StaticServlet.prototype.sendFile_ = function(req, res, path)
@@ -207,30 +207,28 @@ StaticServlet.prototype.sendFile_ = function(req, res, path)
 	var self = this;
 	var file = fs.createReadStream(path);
 	
-	var header = 
-	{
+	var header = {
 		'Content-Type': StaticServlet.MimeMap[path.split('.').pop()] || 'text/plain'
 	};
 	
 	res.writeHead(200, header);
 	
-	if(req.method == 'HEAD')
-	{
+	if(req.method == 'HEAD') {
 		res.end();
 	}
-	else
-	{
-		file.on('data', res.write.bind(res));
-		var endF = function ()
-		{
+	else {
+		file.on('data', res.write.bind (res));
+
+		var endF = function () {
 			res.end();
-		}
+		};
+
 		file.on('close', endF);
 		
-		var sendErrorF = function(error)
-		{
-			self.sendError_(req, resp, error);
-		}
+		var sendErrorF = function (error) {
+			self.sendError_(req, res, error);
+		};
+
 		file.on('error', sendErrorF);
 	}
 };
