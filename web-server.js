@@ -1,5 +1,6 @@
 //#!/usr/bin/env node
-"use strict";
+
+/*jshint strict:false */
 
 var util = require('util');
 var http = require('http');
@@ -9,11 +10,13 @@ var events = require('events');
 
 var DEFAULT_PORT = 8000;
 
-function main(argvs) {
+function main(argv) {
     var server = new HttpServer({
 		'GET': createServlet(StaticServlet),
 		'HEAD': createServlet(StaticServlet)
-	}).start(Number(argv[2]) || DEFAULT_PORT);
+	});
+
+    server.start(Number(argv[2]) || DEFAULT_PORT);
 }
 
 function escapeHtml(value)
@@ -22,7 +25,7 @@ function escapeHtml(value)
 	valString = valString.replace('<', '&lt;');
 	valString = valString.replace('>', '&gt;');
 	valString = valString.replace('"', '&quot;');
-	return value;
+	return valString;
 }
 
 function createServlet(Clazz)
@@ -40,7 +43,7 @@ function HttpServer(handlers)
 HttpServer.prototype.start = function(port)
 {
 	this.port = port;
-	this.server.listen(port);
+	this.server.listen(this.port);
 	util.puts('Http Server running at http://localhost:' + port + '/');
 };
 
@@ -76,7 +79,7 @@ HttpServer.prototype.handleRequest_ = function(req, res)
 
 function StaticServlet() {}
 
-StaticServlet..MimeMap = 
+StaticServlet.MimeMap =
 {
 	'txt': 'text/plain',
 	'html': 'text/html',
@@ -100,7 +103,7 @@ StaticServlet.prototype.handleRequest = function(req, res)
 	var matchFunc = function(match, hex)
 	{
 		return String.fromCharCode(parseInt(hex, 16));
-	}
+	};
 	
 	path = path.replace(/%(..)/g, matchFunc);
 	
@@ -128,12 +131,12 @@ StaticServlet.prototype.handleRequest = function(req, res)
 		}
 		
 		return returnObj;
-	}
+	};
 	
 	fs.stat(path, fsTypeF);
-}
+};
 
-StaticServlet.prototype.sendError_ = function(req, resp, error)
+StaticServlet.prototype.sendError_ = function(req, res, error)
 {
 	var txtHtml = 
 	{
@@ -144,7 +147,7 @@ StaticServlet.prototype.sendError_ = function(req, resp, error)
 	res.write('<!doctype html>\n');
 	res.write('<title>Internal Server Error</title>');
 	res.write('<h1>Internal Server Error</h1>');
-	res.write(sprintf('<pre>%1$s</pre>', escapeHtml(util.inspect(error))));
+	res.write(util.format('<pre>%s</pre>', escapeHtml(util.inspect(error))));
 	util.puts('500 Internal Server Error');
 	util.puts(util.inspect(error));
 };
@@ -164,7 +167,7 @@ StaticServlet.prototype.sendMissing_ = function(req, res, path)
 	res.write('<h1>Not Found</h1>');
 	res.write('<p>The requested URL %1$s was not found on this server.</p>', escapeHtml(path));
 	res.end();
-	utils.puts(util.format("404 Not Found: %s", path));
+	util.puts(util.format("404 Not Found: %s", path));
 };
 
 StaticServlet.prototype.sendForbidden_ = function(req, res, path)
@@ -180,9 +183,9 @@ StaticServlet.prototype.sendForbidden_ = function(req, res, path)
 	res.write('<!doctype html>\n');
 	res.write('<title>403 Forbidden</title>\n');
 	res.write('<h1>Forbidden</h1>');
-	res.write(sprintf('<p>You do not have permission to access %1$s on this server.</p>', escapeHtml(path)));
+	res.write(util.format('<p>You do not have permission to access %s on this server.</p>', escapeHtml(path)));
 	res.end();
-	util.puts(sprintf('403 Forbidden %1$s', path));
+	util.puts(util.format('403 Forbidden %s', path));
 };
 
 StaticServlet.prototype.sendRedirect_ = function(req, res, redirectUrl)
@@ -213,7 +216,7 @@ StaticServlet.prototype.sendFile_ = function(req, res, path)
 	
 	res.writeHead(200, header);
 	
-	if(req.method == 'HEAD') {
+	if(req.method === 'HEAD') {
 		res.end();
 	}
 	else {
