@@ -1,4 +1,4 @@
-//#!/usr/bin/env node
+#!/usr/bin/env node
 
 /*jshint strict:false */
 
@@ -10,7 +10,7 @@ var events = require('events');
 
 var DEFAULT_PORT = 8000;
 
-function main(argv) {
+function main (argv) {
     var server = new HttpServer({
 		'GET': createServlet(StaticServlet),
 		'HEAD': createServlet(StaticServlet)
@@ -236,5 +236,97 @@ StaticServlet.prototype.sendFile_ = function(req, res, path)
 	}
 };
 
+StaticServlet.prototype.sendDirectory_ = function(req, res, path)
+{
+    var self = this;
+
+    if(path.match(/[^\/]$/))
+    {
+        req.url.pathname +=  '/';
+        var redirectUrl = url.format(url.parse(url.format(req.url)));
+        return self.sendRedirect_(req, res, redirectUrl);
+    }
+
+    var processDir = function (err, files)
+    {
+        if(err)
+        {
+            return self.sendError_(req, res, err);
+        }
+
+        if(!files.length)
+        {
+            return self.writeDirectoryIndex_(req, res, path, files);
+        }
+
+        var remaining = files.length;
+
+        var processFile = function (filename, index)
+        {
+            var statF = function (err, stat)
+            {
+                if(err)
+                {
+                    return self.sendError_(req, res, stat);
+                }
+
+                if(stat.isDirectory())
+                {
+                    files[index] = util.format('%s/', filename);
+                }
+
+                if(!(--remaining))
+                {
+                    return self.writeDirectoryIndex_(req, res, path, files);
+                }
+            };
+
+            fs.stat(util.format('%s/%s', path, filename), statF);
+        };
+
+        files.forEach(processFile);
+    };
+
+    fs.readdir (path, processDir);
+};
+
+StaticServlet.prototype.writeDirectoryIndex_ = function(req, res, path, files)
+{
+    path = path.substring(1);
+
+    var headInfo = {'Content-Type': 'text/html'};
+
+    res.writeHead(200, headInfo);
+
+    if(req.method === 'HEAD')
+    {
+        res.end();
+        return;
+    }
+
+    res.write('<!doctype html>\n');
+    res.write(util.format('<title>%s</title>\n', escapeHtml(path)));
+    res.write('<style>\n');
+    res.write('  ol { list-style-type: none; font-size: 1.2em; }\n');
+    res.write('</style>\n');
+    res.write(util.format('<h1>Directory: %s</h1>', escapeHtml(path)));
+    res.write('<ol>');
+
+    var processFile = function(filename)
+    {
+        if(filename.charAt(0) !== '.')
+        {
+            var escapedFn = escapeHtml(filename);
+            res.write(util.format('<li><a href="%s">%s</a></li>', escapedFn, escapedFn));
+        }
+    };
+
+    files.forEach(processFile);
+
+    res.write('</ol');
+    res.end();
+};
+
+main(process.argv);
 
 
