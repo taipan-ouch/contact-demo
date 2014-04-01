@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
-/*jshint strict:false */
+/* jshint globalstrict: true*/
+"use strict";
 
 var util = require('util');
 var http = require('http');
@@ -123,7 +124,7 @@ StaticServlet.prototype.handleRequest = function(req, res)
 		}
 		else if(stat.isDirectory())
 		{
-			returnObj = stat.sendDirectory_(req, res, path);
+			returnObj = self.sendDirectory_(req, res, path);
 		}
 		else
 		{
