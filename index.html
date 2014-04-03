@@ -20,6 +20,35 @@
             <a href="#"><img src="img/logo.png" alt="Contact Path"/></a>
         </div>
     </header>
+
+    <div id="smartSearch" ng-controller="SearchCtrl">
+        <input type="search" id="searchBox" placeholder="Who?" autocomplete="off" ng-model="search"/>
+        <ul id="searchResults" ng-show="search.length && (contacts | regex:'name':' +'+search+'|^'+search).length">
+            <li ng-repeat="contact in contacts | regex:'name':' +'+search+'|^'+search | orderBy:'name' | limitTo:6">
+                <a href="#/view/{{contact.id}}">{{contact.name}}</a>
+            </li>
+        </ul>
+        <p ng-show="(search.length>2) && !(contacts | regex:'name':' +'+search+'|^'+search).length">
+            A contact named <strong>{{search}}</strong> is not found.
+        </p>
+        <div class="loader"
+             ng-show="(search.length<3) && !(contacts | regex:'name':' +'+search+'|^'+search).length"></div>
+        <div class="clearfix"></div>
+    </div>
+
+    <div id="contactsList" class="listContainer" ng-controller="ListCtrl">
+        <d1 ng-repeat="contactList in contactLists">
+            <dt>{{contactList.name}}</dt>
+            <dd ng-repeat="contact in contactList.contacts">
+                <a class="cnt" href="#/view/{{contact.id}}">{{contact.name}}</a>
+            </dd>
+        </d1>
+    </div>
+
+    <div id="rightViewController">
+        <div ng-view></div>
+    </div>
+
 </div>
 
 <script src="lib/angular/angular.js"></script>
