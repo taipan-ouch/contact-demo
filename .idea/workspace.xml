@@ -3,6 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="0240714f-ceee-4d89-b37a-49c72ed04b06" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/directives.js" afterPath="$PROJECT_DIR$/js/directives.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="contact-demo.iws" />
     <ignored path=".idea/workspace.xml" />
