@@ -15,7 +15,7 @@ var routeProvider = function($routeProvider)
 };
 
 var contactPathModule = angular.module('contactPath',
-    ['contactPath.filters', 'contactPath.services', 'contactPath.directives']);
+    ['ngRoute', 'contactPath.filters', 'contactPath.services', 'contactPath.directives']);
 
 var obj = contactPathModule.run(scope);
 obj.config(['$routeProvider', routeProvider]);
