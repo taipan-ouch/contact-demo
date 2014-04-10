@@ -23,7 +23,7 @@ var integerFunc = function() {
                 }
             };
 
-            ctrl.$parsers.unshift(viewValueFunc());
+            ctrl.$parsers.unshift(viewValueFunc);
         }
     };
 };
