@@ -23,10 +23,10 @@ obj.config(['$routeProvider', routeProvider]);
 
 var AddCtrl = function($scope, $location, contacts)
 {
-    $scope.contactData = {};
+    $scope.contactdata = {};
 
-    $scope.save = function(contactData) {
-        var id = contacts.save({name:contactData.name, phone:contactData.phone, email:contactData.email});
+    $scope.save = function(contactdata) {
+        var id = contacts.save({phone:contactdata.phone, email:contactdata.email, name:contactdata.name});
         $location.path('/view/' + id);
     };
 };
@@ -40,9 +40,9 @@ var EditCtrl = function($scope, $routeParams, $location, contacts)
 {
     $scope.contact = contacts.get($routeParams.id);
 
-    $scope.update = function(contactData) {
-        var id = contacts.update({id:contactData.id, name:contactData.name,
-            phone:contactData.phone, email:contactData.email});
+    $scope.update = function(contactdata) {
+        var id = contacts.update({id:contactdata.id, name:contactdata.name,
+            phone:contactdata.phone, email:contactdata.email});
         $location.path('/view/' + id);
     };
 

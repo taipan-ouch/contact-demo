@@ -123,7 +123,8 @@ var contactBean = function (localStorage, $rootScope) {
     createPersistentProperty('contacts', 'cpContactLists', Array);
 
     if(self.contacts.length === 0 ) {
-        self.save({is: 1, name: 'Noonan Tim', phone: '7204801003', email: 'tim.noonan@me.com'});
+        self.save({id: 1, name: 'Noonan Tim', phone: '7204801003', email: 'tim.noonan@me.com'});
+        self.save({id: 2, name: 'Smith, Tim', phone: '5555555555', email: 'tim.smith@foo.com'});
     }
 };
 

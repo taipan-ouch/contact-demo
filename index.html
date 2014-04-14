@@ -34,7 +34,8 @@
             A contact named <strong>{{search}}</strong> is not found.
         </p>
         <div class="loader"
-             ng-show="(search.length<3) && !(contacts | regex:'name':' +'+search+'|^'+search).length"></div>
+             ng-show="(search.length<3) && !(contacts | regex:'name':' +'+search+'|^'+search).length">
+        </div>
         <div class="clearfix"></div>
     </div>
 
