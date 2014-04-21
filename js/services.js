@@ -95,11 +95,13 @@ var contactBean = function (localStorage, $rootScope) {
         };
 
         self.contacts.forEach(contactFunc);
+        return contactLists;
     };
 
     self.flush = function () {
         self.contacts = [];
     };
+
 
     function createPersistentProperty(localName, storageName, Type) {
         var json = localStorage[storageName];
@@ -123,9 +125,12 @@ var contactBean = function (localStorage, $rootScope) {
     createPersistentProperty('contacts', 'cpContactLists', Array);
 
     if(self.contacts.length === 0 ) {
-        self.save({id: 1, name: 'Noonan Tim', phone: '7204801003', email: 'tim.noonan@me.com'});
+        self.save({id: 1, name: 'Noonan, Tim', phone: '7204801003', email: 'tim.noonan@me.com'});
         self.save({id: 2, name: 'Smith, Tim', phone: '5555555555', email: 'tim.smith@foo.com'});
+        self.save({id: 3, name: 'Doe, John', phone: '7777777777', email: 'jdoe@example.com'});
     }
+
+    self.contactLists = self.genContactLists();
 };
 
 contactPathModule.service('contacts', contactBean);

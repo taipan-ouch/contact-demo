@@ -12,7 +12,7 @@
     <div>
         <input name="email" ng-model="contactdata.email" ng-class="{error: myForm.email.$error.email}" type="email"
                autocomplete="off" placeholder="Email"/>
-        <span ng-show="myForm.email.$error.email">From when they started to accept invalid emails?</span>
+        <span ng-show="myForm.email.$error.email">From when did they started to accept invalid emails?</span>
     </div>
 
     <button ng-click="update(contactdata)" ng-disabled="isClean() || myForm.$invalid" class="btn btn-left">

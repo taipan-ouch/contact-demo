@@ -50,7 +50,6 @@ var EditCtrl = function($scope, $routeParams, $location, contacts)
         contacts.remove(id);
         $location.path('/');
     };
-
 };
 
 var SearchCtrl = function($scope, contacts)
